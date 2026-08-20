@@ -1,5 +1,4 @@
 import env from '#start/env'
-import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/core/http'
 
 /**
@@ -79,9 +78,10 @@ export const http = defineConfig({
     httpOnly: true,
 
     /**
-     * Send cookies only over HTTPS in production.
+     * Send cookies only over HTTPS. Follows APP_URL so HTTP
+     * deployments (Coolify without TLS) still receive sessions.
      */
-    secure: app.inProduction,
+    secure: appUrl.startsWith('https://'),
 
     /**
      * Cross-site policy for cookie sending.

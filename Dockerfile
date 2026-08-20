@@ -29,6 +29,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3333
+ENV LOG_LEVEL=info
+ENV SESSION_DRIVER=cookie
 
 COPY --from=build /app/build ./
 COPY docker-entrypoint.js ./
