@@ -9,7 +9,7 @@ export const DECK_EXPORT_VERSION = 1
 export type ExportedCard = {
   front: string
   back: string
-  explanation: string | null
+  explanation?: string | null
   dueAt?: string
   interval?: number
   ease?: number

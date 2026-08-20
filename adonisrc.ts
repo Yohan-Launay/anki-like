@@ -2,6 +2,7 @@ import { indexPages } from '@adonisjs/inertia'
 import { indexEntities } from '@adonisjs/core'
 import { defineConfig } from '@adonisjs/core/app'
 import { generateRegistry } from '@tuyau/core/hooks'
+import type { CommonHooks } from '@adonisjs/assembler/types'
 
 export default defineConfig({
   /*
@@ -132,7 +133,7 @@ export default defineConfig({
       }),
       indexPages({ framework: 'react' }),
       generateRegistry(),
-    ],
+    ] as unknown as CommonHooks['init'],
     buildStarting: [() => import('@adonisjs/vite/build_hook')],
   },
 })
