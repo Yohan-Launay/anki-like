@@ -14,6 +14,13 @@ export const appUrl = env.get('APP_URL')
  */
 export const http = defineConfig({
   /**
+   * Keep idle connections open longer than the reverse proxy
+   * (Coolify / Traefik / Nginx) so it does not reuse a socket
+   * already closed by Node.js (502 Bad Gateway).
+   */
+  keepAliveTimeout: 55_000,
+
+  /**
    * Generate a unique request id for each incoming request.
    * Useful to correlate logs and debug a request flow.
    */
