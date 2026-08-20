@@ -32,11 +32,13 @@ export default function Layout({ children }: { children: ReactElement<Data.Share
             <nav>
               {children.props.user ? (
                 <>
-                  <Link route="home">Aujourd’hui</Link>
+                  <Link route="home" className="nav-home">
+                    Aujourd’hui
+                  </Link>
                   <Link route="study.show" className="button button-sm">
                     Réviser
                   </Link>
-                  <span className="avatar">{children.props.user.initials}</span>
+                  <span className="avatar nav-avatar">{children.props.user.initials}</span>
                   <Form route="session.destroy">
                     <button type="submit" className="nav-button">
                       Déconnexion
@@ -46,7 +48,9 @@ export default function Layout({ children }: { children: ReactElement<Data.Share
               ) : (
                 <>
                   <Link route="new_account.create">Inscription</Link>
-                  <Link route="session.create">Connexion</Link>
+                  <Link route="session.create" className="button button-sm">
+                    Connexion
+                  </Link>
                 </>
               )}
             </nav>

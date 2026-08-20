@@ -96,7 +96,12 @@ function StudyCard({
         {flipped && card.explanation ? (
           <span className="flashcard-explanation">{card.explanation}</span>
         ) : null}
-        {!flipped ? <span className="flashcard-hint">Espace ou clic pour retourner</span> : null}
+        {!flipped ? (
+          <>
+            <span className="flashcard-hint hint-keyboard">Espace ou clic pour retourner</span>
+            <span className="flashcard-hint hint-touch">Appuie pour retourner</span>
+          </>
+        ) : null}
       </button>
 
       {flipped ? (
