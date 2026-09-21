@@ -33,8 +33,16 @@ export default class DecksController {
   async show({ auth, params, request, inertia }: HttpContext) {
     const deck = await StudyService.ownedDeck(auth.user!.id, params.id)
     const query = String(request.input('q', '')).trim()
+    const flaggedOnly = String(request.input('flagged', '')) === '1'
     const page = Math.max(1, Number.parseInt(String(request.input('page', 1)), 10) || 1)
-    const cardsQuery = Card.query().where('deckId', deck.id).orderBy('createdAt', 'desc')
+    const cardsQuery = Card.query()
+      .where('deckId', deck.id)
+      .orderBy('flagged', 'desc')
+      .orderBy('createdAt', 'desc')
+
+    if (flaggedOnly) {
+      cardsQuery.where('flagged', true)
+    }
 
     if (query) {
       const term = query.replace(/[%_]/g, '')
@@ -48,12 +56,18 @@ export default class DecksController {
 
     const paginator = await cardsQuery.paginate(page, CARDS_PER_PAGE)
     const stats = await StudyService.stats(auth.user!.id, deck.id)
+    const flaggedRow = await Card.query()
+      .where('deckId', deck.id)
+      .where('flagged', true)
+      .count('* as total')
+      .first()
 
     return inertia.render('decks/show', {
       deck: DeckTransformer.transform(deck),
       cards: CardTransformer.transform(paginator.all()),
       stats,
-      filters: { q: query },
+      flaggedCount: Number(flaggedRow?.$extras.total ?? 0),
+      filters: { q: query, flagged: flaggedOnly },
       pagination: {
         page: paginator.currentPage,
         lastPage: paginator.lastPage,
@@ -191,7 +205,10 @@ export default class DecksController {
       return created
     })
 
-    session.flash('success', `Paquet importé · ${payload.cards.length} cartes`)
+    session.flash(
+      'success',
+      `Paquet importé · ${payload.cards.length} carte${payload.cards.length > 1 ? 's' : ''} · ${deck.newCardsPerDay} nouvelles max / jour`
+    )
     return response.redirect().toRoute('decks.show', { id: deck.id })
   }
 }

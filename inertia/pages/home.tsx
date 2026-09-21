@@ -2,6 +2,7 @@ import { type Data } from '@generated/data'
 import { type InertiaProps } from '~/types'
 import { Form, Link } from '@adonisjs/inertia/react'
 import { usePage } from '@inertiajs/react'
+import Fast10Button from '~/components/fast_10_button'
 import GearIcon from '~/components/gear_icon'
 import { PlayIcon, PlusIcon, UploadIcon } from '~/components/icons'
 
@@ -96,6 +97,11 @@ export default function Home({ decks = [], stats }: HomeProps) {
                       <span>
                         {deck.cardsCount} carte{deck.cardsCount > 1 ? 's' : ''}
                       </span>
+                      {deck.flaggedCount > 0 ? (
+                        <span className="deck-meta-flag">
+                          {deck.flaggedCount} à corriger
+                        </span>
+                      ) : null}
                     </div>
                   </Link>
                   <Link
@@ -108,14 +114,17 @@ export default function Home({ decks = [], stats }: HomeProps) {
                     <GearIcon />
                   </Link>
                 </div>
-                {deck.dueCount > 0 ? (
-                  <Link route="study.show" qs={{ deck: String(deck.id) }} className="button">
-                    <PlayIcon size={16} />
-                    Réviser
-                  </Link>
-                ) : (
-                  <span className="deck-caught-up">À jour</span>
-                )}
+                <div className="deck-card-actions">
+                  {deck.cardsCount > 0 ? <Fast10Button deckId={deck.id} /> : null}
+                  {deck.dueCount > 0 ? (
+                    <Link route="study.show" qs={{ deck: String(deck.id) }} className="button">
+                      <PlayIcon size={16} />
+                      Réviser
+                    </Link>
+                  ) : (
+                    <span className="deck-caught-up">À jour</span>
+                  )}
+                </div>
               </article>
             ))}
           </div>

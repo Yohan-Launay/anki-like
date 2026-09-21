@@ -91,6 +91,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/study_controller').default['show']>>>
     }
   }
+  'study.fast': {
+    methods: ["POST"]
+    pattern: '/study/fast'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/card').fastStudyValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/card').fastStudyValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/study_controller').default['startFast']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/study_controller').default['startFast']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'study.review': {
     methods: ["POST"]
     pattern: '/cards/:id/review'
@@ -233,6 +245,18 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/cards_controller').default['edit']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/cards_controller').default['edit']>>>
+    }
+  }
+  'cards.flag': {
+    methods: ["POST"]
+    pattern: '/cards/:id/flag'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/card').flagValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/card').flagValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/cards_controller').default['flag']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/cards_controller').default['flag']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'cards.update': {

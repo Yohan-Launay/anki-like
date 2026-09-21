@@ -14,6 +14,7 @@ export interface ApiDefinition {
   }
   study: {
     show: typeof routes['study.show']
+    fast: typeof routes['study.fast']
     review: typeof routes['study.review']
   }
   decks: {
@@ -30,6 +31,7 @@ export interface ApiDefinition {
   cards: {
     store: typeof routes['cards.store']
     edit: typeof routes['cards.edit']
+    flag: typeof routes['cards.flag']
     update: typeof routes['cards.update']
     destroy: typeof routes['cards.destroy']
   }

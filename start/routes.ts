@@ -28,6 +28,7 @@ router
     router.post('logout', [controllers.Session, 'destroy'])
 
     router.get('study', [controllers.Study, 'show']).as('study.show')
+    router.post('study/fast', [controllers.Study, 'startFast']).as('study.fast')
     router.post('cards/:id/review', [controllers.Study, 'review']).as('study.review')
 
     router.get('decks/create', [controllers.Decks, 'create']).as('decks.create')
@@ -42,6 +43,7 @@ router
     router.post('decks/:id/cards', [controllers.Cards, 'store']).as('cards.store')
 
     router.get('cards/:id/edit', [controllers.Cards, 'edit']).as('cards.edit')
+    router.post('cards/:id/flag', [controllers.Cards, 'flag']).as('cards.flag')
     router.post('cards/:id', [controllers.Cards, 'update']).as('cards.update')
     router.delete('cards/:id', [controllers.Cards, 'destroy']).as('cards.destroy')
   })

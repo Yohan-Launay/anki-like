@@ -11,6 +11,7 @@ export type ScannedRoutes = {
     'session.store': { paramsTuple?: []; params?: {} }
     'session.destroy': { paramsTuple?: []; params?: {} }
     'study.show': { paramsTuple?: []; params?: {} }
+    'study.fast': { paramsTuple?: []; params?: {} }
     'study.review': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'decks.create': { paramsTuple?: []; params?: {} }
     'decks.example': { paramsTuple?: []; params?: {} }
@@ -23,6 +24,7 @@ export type ScannedRoutes = {
     'decks.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'cards.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'cards.edit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'cards.flag': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'cards.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'cards.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
@@ -52,12 +54,14 @@ export type ScannedRoutes = {
     'new_account.store': { paramsTuple?: []; params?: {} }
     'session.store': { paramsTuple?: []; params?: {} }
     'session.destroy': { paramsTuple?: []; params?: {} }
+    'study.fast': { paramsTuple?: []; params?: {} }
     'study.review': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'decks.example': { paramsTuple?: []; params?: {} }
     'decks.import': { paramsTuple?: []; params?: {} }
     'decks.store': { paramsTuple?: []; params?: {} }
     'decks.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'cards.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'cards.flag': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'cards.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   DELETE: {

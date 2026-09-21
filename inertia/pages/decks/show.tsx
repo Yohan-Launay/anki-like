@@ -1,8 +1,9 @@
 import { type Data } from '@generated/data'
 import { type InertiaProps } from '~/types'
 import { Form, Link, useRouter } from '@adonisjs/inertia/react'
+import Fast10Button from '~/components/fast_10_button'
 import GearIcon from '~/components/gear_icon'
-import { PencilIcon, PlayIcon, PlusIcon, TrashIcon } from '~/components/icons'
+import { FlagIcon, PencilIcon, PlayIcon, PlusIcon, TrashIcon } from '~/components/icons'
 import { useEffect, useState } from 'react'
 
 const MIN_SEARCH_CHARS = 2
@@ -15,7 +16,8 @@ type ShowDeckProps = InertiaProps<{
     newCount: number
     reviewCount: number
   }
-  filters: { q: string }
+  flaggedCount: number
+  filters: { q: string; flagged: boolean }
   pagination: {
     page: number
     lastPage: number
@@ -24,11 +26,21 @@ type ShowDeckProps = InertiaProps<{
   }
 }>
 
-export default function ShowDeck({ deck, cards, stats, filters, pagination }: ShowDeckProps) {
+export default function ShowDeck({
+  deck,
+  cards,
+  stats,
+  flaggedCount,
+  filters,
+  pagination,
+}: ShowDeckProps) {
   const listQs = (page: number) => {
     const qs: Record<string, string> = {}
     if (filters.q) {
       qs.q = filters.q
+    }
+    if (filters.flagged) {
+      qs.flagged = '1'
     }
     if (page > 1) {
       qs.page = String(page)
@@ -52,6 +64,7 @@ export default function ShowDeck({ deck, cards, stats, filters, pagination }: Sh
           </p>
         </div>
         <div className="actions">
+          {pagination.total > 0 ? <Fast10Button deckId={deck.id} /> : null}
           {stats.dueCount > 0 ? (
             <Link route="study.show" qs={{ deck: String(deck.id) }} className="button">
               <PlayIcon size={16} />
@@ -69,6 +82,29 @@ export default function ShowDeck({ deck, cards, stats, filters, pagination }: Sh
           </Link>
         </div>
       </div>
+
+      {flaggedCount > 0 ? (
+        <div className="flagged-banner">
+          <p>
+            {flaggedCount} carte{flaggedCount > 1 ? 's' : ''} à corriger
+          </p>
+          {filters.flagged ? (
+            <Link route="decks.show" routeParams={{ id: deck.id }} className="button button-ghost button-sm">
+              Voir tout
+            </Link>
+          ) : (
+            <Link
+              route="decks.show"
+              routeParams={{ id: deck.id }}
+              qs={{ flagged: '1' }}
+              className="button button-secondary button-sm"
+            >
+              <FlagIcon />
+              Voir
+            </Link>
+          )}
+        </div>
+      ) : null}
 
       <section className="panel">
         <h2>Ajouter une carte</h2>
@@ -131,20 +167,28 @@ export default function ShowDeck({ deck, cards, stats, filters, pagination }: Sh
           <h2>Cartes</h2>
         </div>
 
-        <DeckSearch deckId={deck.id} query={filters.q} resultCount={pagination.total} />
+        <DeckSearch
+          deckId={deck.id}
+          query={filters.q}
+          flagged={filters.flagged}
+          resultCount={pagination.total}
+        />
 
         {cards.length === 0 ? (
           <p className="muted">
-            {filters.q
-              ? 'Aucune carte ne correspond à cette recherche.'
-              : 'Aucune carte pour l’instant.'}
+            {filters.flagged
+              ? 'Aucune carte à corriger.'
+              : filters.q
+                ? 'Aucune carte ne correspond à cette recherche.'
+                : 'Aucune carte pour l’instant.'}
           </p>
         ) : (
           <>
             <ul className="card-list">
               {cards.map((card) => (
-                <li key={card.id}>
+                <li key={card.id} className={card.flagged ? 'is-flagged' : undefined}>
                   <div>
+                    {card.flagged ? <span className="flag-badge">À corriger</span> : null}
                     <strong>{card.front}</strong>
                     <span>{card.back}</span>
                     {card.explanation ? (
@@ -220,10 +264,12 @@ export default function ShowDeck({ deck, cards, stats, filters, pagination }: Sh
 function DeckSearch({
   deckId,
   query,
+  flagged,
   resultCount,
 }: {
   deckId: number
   query: string
+  flagged: boolean
   resultCount: number
 }) {
   const router = useRouter()
@@ -238,11 +284,19 @@ function DeckSearch({
     }
 
     const timer = window.setTimeout(() => {
+      const qs: Record<string, string> = {}
+      if (nextQuery) {
+        qs.q = nextQuery
+      }
+      if (flagged) {
+        qs.flagged = '1'
+      }
+
       router.get(
         {
           route: 'decks.show',
           routeParams: { id: deckId },
-          qs: nextQuery ? { q: nextQuery } : {},
+          qs,
         },
         {},
         {
@@ -254,7 +308,7 @@ function DeckSearch({
     }, 300)
 
     return () => window.clearTimeout(timer)
-  }, [deckId, query, router, term])
+  }, [deckId, flagged, query, router, term])
 
   return (
     <div className="search-form">

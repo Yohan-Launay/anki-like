@@ -16,6 +16,7 @@ export default class CardTransformer extends BaseTransformer<Card> {
       repetitions: this.resource.repetitions,
       lapses: this.resource.lapses,
       isNew: isNewCard(this.resource),
+      flagged: Boolean(this.resource.flagged),
     }
   }
 }

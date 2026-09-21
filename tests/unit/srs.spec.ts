@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
 import { DateTime } from 'luxon'
-import { applyReview } from '#services/srs_service'
+import { applyReview, remainingNewCardSlots } from '#services/srs_service'
 
 test.group('SRS SM-2', () => {
   const now = DateTime.utc(2026, 8, 20, 12)
@@ -35,5 +35,21 @@ test.group('SRS SM-2', () => {
 
     assert.equal(result.interval, 25)
     assert.equal(result.dueAt.toISO(), now.plus({ days: 25 }).toISO())
+  })
+})
+
+test.group('New cards daily cap', () => {
+  test('finishing a new card does not free a slot the same day', ({ assert }) => {
+    assert.equal(remainingNewCardSlots(15, 0), 15)
+    assert.equal(remainingNewCardSlots(15, 1), 14)
+    assert.equal(remainingNewCardSlots(15, 15), 0)
+    assert.equal(remainingNewCardSlots(15, 40), 0)
+    assert.equal(remainingNewCardSlots(0, 0), 0)
+  })
+
+  test('the same cap keeps a review pile from emptying in one sitting', ({ assert }) => {
+    assert.equal(remainingNewCardSlots(15, 0), 15)
+    assert.equal(remainingNewCardSlots(15, 15), 0)
+    assert.equal(remainingNewCardSlots(15, 62), 0)
   })
 })

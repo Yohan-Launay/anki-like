@@ -10,4 +10,14 @@ export const cardValidator = vine.create({
 export const reviewValidator = vine.create({
   rating: vine.enum(RATINGS),
   deckId: vine.number().positive().optional(),
+  mode: vine.enum(['fast']).optional(),
+})
+
+export const flagValidator = vine.create({
+  deckId: vine.number().positive().optional(),
+  mode: vine.enum(['fast']).optional(),
+})
+
+export const fastStudyValidator = vine.create({
+  deckId: vine.number().positive(),
 })

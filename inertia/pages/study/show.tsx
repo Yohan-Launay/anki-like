@@ -2,24 +2,33 @@ import { type Data } from '@generated/data'
 import { type InertiaProps } from '~/types'
 import { Form, Link } from '@adonisjs/inertia/react'
 import { useEffect, useState } from 'react'
+import Fast10Button from '~/components/fast_10_button'
+import { FlagIcon } from '~/components/icons'
+import RatingHelp from '~/components/rating_help'
 
 type StudyProps = InertiaProps<{
   card: Data.Card | null
   remaining: number
   deckId: number | null
+  mode: 'fast' | null
 }>
 
-export default function StudyShow({ card, remaining, deckId }: StudyProps) {
+export default function StudyShow({ card, remaining, deckId, mode }: StudyProps) {
   if (!card) {
     return (
       <div className="page page-narrow study-done">
-        <p className="eyebrow">Session</p>
-        <h1>C’est tout pour aujourd’hui.</h1>
+        <p className="eyebrow">{mode === 'fast' ? 'Fast 10' : 'Session'}</p>
+        <h1>{mode === 'fast' ? 'Round terminé.' : 'C’est tout pour aujourd’hui.'}</h1>
         <p className="lede">
-          Reviens demain — ou ajoute quelques cartes si tu as encore deux minutes.
+          {mode === 'fast'
+            ? 'Dix cartes au hasard, c’est fait. Tu peux en relancer un, ou revenir aux révisions du jour.'
+            : 'Reviens demain — ou ajoute quelques cartes si tu as encore deux minutes.'}
         </p>
         <div className="actions">
-          <Link route="home" className="button">
+          {mode === 'fast' && deckId ? (
+            <Fast10Button deckId={deckId} className="button" label="Encore 10" />
+          ) : null}
+          <Link route="home" className="button button-secondary">
             Retour à l’accueil
           </Link>
         </div>
@@ -27,23 +36,31 @@ export default function StudyShow({ card, remaining, deckId }: StudyProps) {
     )
   }
 
-  return <StudyCard key={card.id} card={card} remaining={remaining} deckId={deckId} />
+  return (
+    <StudyCard key={card.id} card={card} remaining={remaining} deckId={deckId} mode={mode} />
+  )
 }
 
 function StudyCard({
   card,
   remaining,
   deckId,
+  mode,
 }: {
   card: Data.Card
   remaining: number
   deckId: number | null
+  mode: 'fast' | null
 }) {
   const [flipped, setFlipped] = useState(false)
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
       if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+        return
+      }
+
+      if (document.querySelector('dialog[open]')) {
         return
       }
 
@@ -76,19 +93,23 @@ function StudyCard({
 
   return (
     <div className="page study-page">
-      <p className="eyebrow">
-        <Link route="home">Accueil</Link>
-        {deckId ? (
-          <>
-            {' '}
-            /{' '}
-            <Link route="decks.show" routeParams={{ id: deckId }}>
-              Paquet
-            </Link>
-          </>
-        ) : null}{' '}
-        · {remaining} restante{remaining > 1 ? 's' : ''}
-      </p>
+      <div className="study-heading">
+        <p className="eyebrow">
+          <Link route="home">Accueil</Link>
+          {deckId ? (
+            <>
+              {' '}
+              /{' '}
+              <Link route="decks.show" routeParams={{ id: deckId }}>
+                Paquet
+              </Link>
+            </>
+          ) : null}{' '}
+          · {mode === 'fast' ? 'Fast 10 · ' : ''}
+          {remaining} restante{remaining > 1 ? 's' : ''}
+        </p>
+        <RatingHelp />
+      </div>
 
       <button type="button" className="flashcard" onClick={() => setFlipped(true)}>
         <span className="flashcard-label">{flipped ? 'Verso' : 'Recto'}</span>
@@ -110,13 +131,38 @@ function StudyCard({
             rating="again"
             label="Encore"
             shortcut="1"
-            title="Revient à la fin de la session"
+            title="Tu ne savais pas — revient dans cette session"
             deckId={deckId}
+            mode={mode}
             cardId={card.id}
           />
-          <RatingButton rating="hard" label="Difficile" shortcut="2" deckId={deckId} cardId={card.id} />
-          <RatingButton rating="good" label="Bien" shortcut="3" deckId={deckId} cardId={card.id} />
-          <RatingButton rating="easy" label="Facile" shortcut="4" deckId={deckId} cardId={card.id} />
+          <RatingButton
+            rating="hard"
+            label="Difficile"
+            shortcut="2"
+            title="Trouvé, mais ça a coincé — demain"
+            deckId={deckId}
+            mode={mode}
+            cardId={card.id}
+          />
+          <RatingButton
+            rating="good"
+            label="Bien"
+            shortcut="3"
+            title="Réponse normale — le rythme habituel"
+            deckId={deckId}
+            mode={mode}
+            cardId={card.id}
+          />
+          <RatingButton
+            rating="easy"
+            label="Facile"
+            shortcut="4"
+            title="Évident — dans plusieurs jours"
+            deckId={deckId}
+            mode={mode}
+            cardId={card.id}
+          />
         </div>
       ) : (
         <div className="study-actions">
@@ -126,6 +172,19 @@ function StudyCard({
           </button>
         </div>
       )}
+
+      <Form route="cards.flag" routeParams={{ id: card.id }} className="study-flag">
+        {({ processing }) => (
+          <>
+            {deckId ? <input type="hidden" name="deckId" value={deckId} /> : null}
+            {mode === 'fast' ? <input type="hidden" name="mode" value="fast" /> : null}
+            <button type="submit" className="button button-ghost button-sm" disabled={processing}>
+              <FlagIcon />
+              {processing ? 'Envoi…' : 'Signaler une erreur'}
+            </button>
+          </>
+        )}
+      </Form>
     </div>
   )
 }
@@ -136,6 +195,7 @@ function RatingButton({
   shortcut,
   title,
   deckId,
+  mode,
   cardId,
 }: {
   rating: 'again' | 'hard' | 'good' | 'easy'
@@ -143,6 +203,7 @@ function RatingButton({
   shortcut: string
   title?: string
   deckId: number | null
+  mode: 'fast' | null
   cardId: number
 }) {
   return (
@@ -151,6 +212,7 @@ function RatingButton({
         <>
           <input type="hidden" name="rating" value={rating} />
           {deckId ? <input type="hidden" name="deckId" value={deckId} /> : null}
+          {mode === 'fast' ? <input type="hidden" name="mode" value="fast" /> : null}
           <button
             type="submit"
             id={`rate-${rating}`}

@@ -10,20 +10,23 @@ export default class HomeController {
       return inertia.render('home', {})
     }
 
-    const now = StudyService.nowForDb()
     const decks = await Deck.query()
       .where('userId', user.id)
       .withCount('cards')
       .withCount('cards', (query) => {
-        query.where('dueAt', '<=', now).as('due_count')
+        query.where('flagged', true).as('flagged_count')
       })
       .orderBy('name', 'asc')
+    const queue = await StudyService.queue(user.id)
+    const dueByDeck = StudyService.dueCountByDeck(queue)
 
-    const stats = await StudyService.stats(user.id)
+    for (const deck of decks) {
+      deck.$extras.due_count = dueByDeck.get(deck.id) ?? 0
+    }
 
     return inertia.render('home', {
       decks: DeckTransformer.transform(decks),
-      stats,
+      stats: StudyService.summarize(queue),
     })
   }
 }

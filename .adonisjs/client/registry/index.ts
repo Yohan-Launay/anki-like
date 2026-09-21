@@ -48,6 +48,12 @@ const routes = {
     tokens: [{"old":"/study","type":0,"val":"study","end":""}],
     types: placeholder as Registry['study.show']['types'],
   },
+  'study.fast': {
+    methods: ["POST"],
+    pattern: '/study/fast',
+    tokens: [{"old":"/study/fast","type":0,"val":"study","end":""},{"old":"/study/fast","type":0,"val":"fast","end":""}],
+    types: placeholder as Registry['study.fast']['types'],
+  },
   'study.review': {
     methods: ["POST"],
     pattern: '/cards/:id/review',
@@ -119,6 +125,12 @@ const routes = {
     pattern: '/cards/:id/edit',
     tokens: [{"old":"/cards/:id/edit","type":0,"val":"cards","end":""},{"old":"/cards/:id/edit","type":1,"val":"id","end":""},{"old":"/cards/:id/edit","type":0,"val":"edit","end":""}],
     types: placeholder as Registry['cards.edit']['types'],
+  },
+  'cards.flag': {
+    methods: ["POST"],
+    pattern: '/cards/:id/flag',
+    tokens: [{"old":"/cards/:id/flag","type":0,"val":"cards","end":""},{"old":"/cards/:id/flag","type":1,"val":"id","end":""},{"old":"/cards/:id/flag","type":0,"val":"flag","end":""}],
+    types: placeholder as Registry['cards.flag']['types'],
   },
   'cards.update': {
     methods: ["POST"],

@@ -54,7 +54,8 @@ export default function DeckSettings({ deck }: InertiaProps<{ deck: Data.Deck }>
               />
               {errors.newCardsPerDay && <div>{errors.newCardsPerDay}</div>}
               <p className="field-hint">
-                10 à 15 est un bon rythme. 0 = uniquement les révisions, pas de cartes neuves.
+                10 à 15 est un bon rythme. Ça limite aussi les révisions du jour. 0 = uniquement
+                les révisions (plafonnées à 15).
               </p>
             </div>
             <button type="submit">Enregistrer</button>

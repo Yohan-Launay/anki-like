@@ -16,6 +16,11 @@ export default function EditCard({
         / Modifier la carte
       </p>
       <h1>Modifier la carte</h1>
+      {card.flagged ? (
+        <p className="lede flagged-note">
+          Signalée pendant une révision. Enregistrer enlève le signalement.
+        </p>
+      ) : null}
 
       <Form route="cards.update" routeParams={{ id: card.id }} className="stack-form">
         {({ errors }) => (

@@ -8,7 +8,7 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class CardSchema extends BaseModel {
-  static $columns = ['back', 'createdAt', 'deckId', 'dueAt', 'ease', 'explanation', 'front', 'id', 'interval', 'lapses', 'repetitions', 'updatedAt'] as const
+  static $columns = ['back', 'createdAt', 'deckId', 'dueAt', 'ease', 'explanation', 'firstReviewedAt', 'flagged', 'front', 'id', 'interval', 'lapses', 'lastReviewedAt', 'repetitions', 'updatedAt'] as const
   $columns = CardSchema.$columns
   @column()
   declare back: string
@@ -22,6 +22,10 @@ export class CardSchema extends BaseModel {
   declare ease: number
   @column()
   declare explanation: string | null
+  @column.dateTime()
+  declare firstReviewedAt: DateTime | null
+  @column()
+  declare flagged: boolean
   @column()
   declare front: string
   @column({ isPrimary: true })
@@ -30,6 +34,8 @@ export class CardSchema extends BaseModel {
   declare interval: number
   @column()
   declare lapses: number
+  @column.dateTime()
+  declare lastReviewedAt: DateTime | null
   @column()
   declare repetitions: number
   @column.dateTime({ autoCreate: true, autoUpdate: true })

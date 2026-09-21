@@ -6,6 +6,7 @@ export type Rating = (typeof RATINGS)[number]
 export const DEFAULT_EASE = 2.5
 export const MIN_EASE = 1.3
 export const NEW_CARDS_PER_SESSION = 15
+export const FAST_SESSION_SIZE = 10
 export const CARDS_PER_PAGE = 20
 
 type SrsFields = {
@@ -76,6 +77,14 @@ export function applyReview(card: SrsFields, rating: Rating, now = DateTime.utc(
 
 export function isNewCard(card: Pick<SrsFields, 'repetitions' | 'lapses'>) {
   return card.repetitions === 0 && card.lapses === 0
+}
+
+/**
+ * Anki-style daily cap: finishing a new card must not pull another
+ * unseen card into the same day's session.
+ */
+export function remainingNewCardSlots(perDay: number, introducedToday: number) {
+  return Math.max(0, perDay - introducedToday)
 }
 
 function roundEase(value: number) {

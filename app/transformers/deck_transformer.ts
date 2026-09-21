@@ -10,6 +10,7 @@ export default class DeckTransformer extends BaseTransformer<Deck> {
       newCardsPerDay: this.resource.newCardsPerDay,
       cardsCount: Number(this.resource.$extras.cards_count ?? 0),
       dueCount: Number(this.resource.$extras.due_count ?? 0),
+      flaggedCount: Number(this.resource.$extras.flagged_count ?? 0),
     }
   }
 }
