@@ -1,11 +1,12 @@
 FROM node:24-bookworm-slim AS base
 WORKDIR /app
 
+
 # better-sqlite3 n'a pas de binaire précompilé sur musl (Alpine)
 # et a besoin de Python + un compilateur C++ pour le fallback node-gyp.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends python3 make g++ \
-    && rm -rf /var/lib/apt/lists/*
+  && apt-get install -y --no-install-recommends python3 make g++ \
+  && rm -rf /var/lib/apt/lists/*
 
 # ----------------------------
 # Dépendances (dev + prod) pour le build
@@ -37,7 +38,7 @@ ENV SQLITE_DB_PATH=/data/db.sqlite3
 COPY --from=build /app/build ./
 COPY docker-entrypoint.js ./
 RUN npm ci --omit=dev \
-    && mkdir -p /app/tmp /data
+  && mkdir -p /app/tmp /data
 
 VOLUME ["/data"]
 
