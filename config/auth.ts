@@ -14,9 +14,10 @@ const authConfig = defineConfig({
      */
     web: sessionGuard({
       /**
-       * Enable persistent login using remember-me tokens.
+       * Keep the user signed in after the session cookie expires.
+       * Tokens last 2 years and are rotated on each silent login.
        */
-      useRememberMeTokens: false,
+      useRememberMeTokens: true,
 
       provider: sessionUserProvider({
         model: () => import('#models/user'),

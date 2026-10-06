@@ -11,7 +11,7 @@ export default class NewAccountController {
     const { passwordConfirmation, ...payload } = await request.validateUsing(signupValidator)
     const user = await User.create({ ...payload })
 
-    await auth.use('web').login(user)
+    await auth.use('web').login(user, true)
     response.redirect().toRoute('home')
   }
 }

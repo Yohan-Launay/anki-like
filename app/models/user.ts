@@ -2,11 +2,14 @@ import { UserSchema } from '#database/schema'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
+import { DbRememberMeTokensProvider } from '@adonisjs/auth/session'
 import { hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import Deck from '#models/deck'
 
 export default class User extends compose(UserSchema, withAuthFinder(hash)) {
+  static rememberMeTokens = DbRememberMeTokensProvider.forModel(User)
+
   @hasMany(() => Deck)
   declare decks: HasMany<typeof Deck>
 
