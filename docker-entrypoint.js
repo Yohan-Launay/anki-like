@@ -1,9 +1,29 @@
 import { randomBytes } from 'node:crypto'
 import { execSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 
 const tmpDir = new URL('./tmp/', import.meta.url)
 mkdirSync(tmpDir, { recursive: true })
+
+if (!process.env.SQLITE_DB_PATH?.trim()) {
+  process.env.SQLITE_DB_PATH = '/data/db.sqlite3'
+}
+
+const dataDir = dirname(process.env.SQLITE_DB_PATH)
+mkdirSync(dataDir, { recursive: true })
+
+if (existsSync('/proc/mounts')) {
+  const mounted = readFileSync('/proc/mounts', 'utf8')
+    .split('\n')
+    .some((line) => line.split(' ')[1] === dataDir)
+
+  if (!mounted) {
+    console.warn(
+      `[mémoire] ${dataDir} n'est pas un volume. La base sera vide au prochain déploiement. Dans Coolify : Configuration > Persistent Storage > Volume Mount, destination ${dataDir}.`
+    )
+  }
+}
 
 process.env.NODE_ENV ||= 'production'
 process.env.HOST ||= '0.0.0.0'
@@ -13,7 +33,7 @@ process.env.SESSION_DRIVER ||= 'cookie'
 process.env.TZ ||= 'UTC'
 
 if (!process.env.APP_KEY?.trim()) {
-  const keyFile = new URL('./tmp/.app_key', import.meta.url)
+  const keyFile = join(dataDir, '.app_key')
   if (existsSync(keyFile)) {
     process.env.APP_KEY = readFileSync(keyFile, 'utf8').trim()
   } else {

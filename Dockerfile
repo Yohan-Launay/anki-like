@@ -31,11 +31,15 @@ ENV HOST=0.0.0.0
 ENV PORT=3333
 ENV LOG_LEVEL=info
 ENV SESSION_DRIVER=cookie
+# La base et la clé d'app vivent ici. Coolify doit monter un volume sur /data.
+ENV SQLITE_DB_PATH=/data/db.sqlite3
 
 COPY --from=build /app/build ./
 COPY docker-entrypoint.js ./
 RUN npm ci --omit=dev \
-    && mkdir -p /app/tmp
+    && mkdir -p /app/tmp /data
+
+VOLUME ["/data"]
 
 EXPOSE 3333
 CMD ["node", "docker-entrypoint.js"]

@@ -24,4 +24,7 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   // Session
   SESSION_DRIVER: Env.schema.enum(['cookie', 'memory', 'database'] as const),
+
+  // SQLite. En production Docker : /data/db.sqlite3, monté en volume Coolify.
+  SQLITE_DB_PATH: Env.schema.string.optional(),
 })

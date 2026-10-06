@@ -1,5 +1,11 @@
+import { mkdirSync } from 'node:fs'
+import { dirname } from 'node:path'
 import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/lucid'
+import env from '#start/env'
+
+const sqliteFilename = env.get('SQLITE_DB_PATH') ?? app.tmpPath('db.sqlite3')
+mkdirSync(dirname(sqliteFilename), { recursive: true })
 
 const dbConfig = defineConfig({
   /**
@@ -18,7 +24,7 @@ const dbConfig = defineConfig({
         /**
          * Database file location.
          */
-        filename: app.tmpPath('db.sqlite3'),
+        filename: sqliteFilename,
       },
 
       /**
